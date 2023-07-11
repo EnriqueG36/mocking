@@ -8,11 +8,13 @@ class CartManagerMongo {
     async createCart(){
         try{
             //Este arreglo vacio se declara para cumplir con el Schema de mongoose
-            let emptyProducts = {productId: null, 
+            /*let emptyProducts = {productId: null, 
                             quantity: 0}
-
+                            */
+                let emptyProducts = []
             //Se pasa el arreglo anterior
-            return await cartModel.create({products: emptyProducts})
+            //return await cartModel.create({products: emptyProducts})
+            return await cartModel.create({produts: emptyProducts})
 
             //return await cartModel.create()
         }catch(err){

@@ -6,10 +6,10 @@ exports.errorHandler = (error, req, res, next) => {
         case EError.INVALID_TYPE_ERROR:
             return res.send({status: 'error', error: error.name})
 
-            break
+            break;
 
         default: 
             return res.send({status: 'error', error: 'Unhandled error'})
-            break
+            break;
     }
 }

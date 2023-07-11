@@ -1,8 +1,18 @@
+//User DAO, Model, DTO y service
 const userModel = require("../daos/model/user.model");
-const CartManagerMongo = require("../daos/mongo/cart.mongo");   //Importamos nuestro manager de carritos
+const CartManagerMongo = require("../daos/mongo/cart.mongo");           //Importamos nuestro manager de carritos
 const { userDto } = require("../dto/user.dto");
 const {userService} = require("../repositories");
-const cartManager = new CartManagerMongo()                      //Intanciamos el manager de carritos
+
+//Custom error
+const { CustomError } = require("../utils/CustomError/customError");
+const { generateUserErrorInfo } = require("../utils/CustomError/info");
+const { EError } = require("../utils/CustomError/EErrors");
+
+//DAO carritos
+const cartManager = new CartManagerMongo()                              //Intanciamos el manager de carritos
+
+//Hasheo de passwords
 const { createHash, isValidPassword } = require('../utils/utils.js')    //Contiene las funciones para hashear el password
 
 
@@ -61,11 +71,24 @@ postUserLogin = async (req, res)=>{
 }
 
 //Registro de nuevo ususario
-postNewUserRegister = async (req, res) => {
+postNewUserRegister = async (req, res, next) => {
+    try{
+        
     const {first_name, last_name, email, age, password} = req.body       //Obtenemos estos atributos del req.body
     
     //Validar si los campos introducidos no están vacíos
-    if(!first_name || !last_name || !email || !age || !password) return res.send({message: "Todos los campos son obligatorios"})
+    if(!first_name || !last_name || !email || !age || !password) {
+
+        CustomError.createError({
+            name: "Error al crear un usuario nuevo",
+            cause: generateUserErrorInfo({first_name, last_name, email, age, password}),
+            message: "Al intentar registrar un nuevo usuario, hacen falta campos",
+            code: EError.INVALID_TYPE_ERROR
+        })
+
+    }
+        
+    //return res.send({message: "Todos los campos son obligatorios"})
     
     //Validar si el campo email está repetido
     //const existEmail = await userModel.findOne({email})                             //Buscamos en la base de datos si el email ya existe 
@@ -100,7 +123,10 @@ postNewUserRegister = async (req, res) => {
     //console.log solo para mostrar todos los datos del usuario, ya que no todos se guardan en la session
     console.log(resultUser)
     //res.status(200).send({message: 'registro exitoso'})
-    res.status(200).redirect('/login')                                       
+    res.status(200).redirect('/login')
+    }catch(error){
+        next(error)
+    }                                   
 }
 
 //Logout de usuario ya existente

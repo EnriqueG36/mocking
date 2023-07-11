@@ -45,8 +45,7 @@ app.use(session({
 	saveUninitialized: false
 }))
 
-//MIddleware para manejo de custom Error
-app.use(errorHandler)
+
 
 objectConfig.connectDB()                                //Se ejecuta el metodo connectDB para ejecutar la conexion conmongo Atlas
 
@@ -56,6 +55,10 @@ passport.use(passport.initialize())
 passport.use(passport.session())
 
 app.use(routerServer)	                             //Esto es nuevo, es para quitar los routers de productos y carritos del archivo principal, se define en un archivo index dentro de /routes
+
+//Middleware para manejo de custom Error (No funciona más arriba, indagar)
+app.use(errorHandler)
+
 
 const httpServer = app.listen(PORT, (err) => {
 if(err) console.log('Error en el servidor', err)
